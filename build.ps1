@@ -1,11 +1,13 @@
-﻿cls
+﻿[CmdletBinding()]
+Param(
+  [Parameter(Mandatory=$True,Position=1)]
+   [string]$nugetExe
+)
+
+cls
 
 # Restore NuGet packages for build to run
 Write-Host "Restoring packages needed for Build script to run"
-
-# SANTI: MAKE THIS A PARAMETER
-$nugetExe = "D:\Santi\soft-lib\NuGet-3\nuget.exe"
-
 & $nugetExe restore ".\Build\packages.config" -PackagesDirectory ".\packages"
 
 # '[p]sake' is the same as 'psake' but $Error is not polluted
