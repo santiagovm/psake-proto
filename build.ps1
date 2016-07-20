@@ -8,7 +8,7 @@ cls
 
 # Restore NuGet packages for build to run
 Write-Host "Restoring packages needed for Build script to run"
-& $nugetExe restore ".\Build\packages.config" -PackagesDirectory ".\packages"
+& $nugetExe restore "Build\packages.config" -PackagesDirectory ".\packages"
 
 # '[p]sake' is the same as 'psake' but $Error is not polluted
 Write-Host "Importing psake module"
