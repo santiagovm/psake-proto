@@ -8,7 +8,7 @@ cls
 
 # Restore NuGet packages for build to run
 Write-Host "Restoring packages needed for Build script to run"
-& $nugetExe restore "Build\packages.config" -PackagesDirectory ".\packages"
+& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages"
 
 # '[p]sake' is the same as 'psake' but $Error is not polluted
 Write-Host "Importing psake module"
@@ -24,7 +24,7 @@ Import-Module $psakeModule
 # running the build script
 Write-Host "Running the build script"
 
-Invoke-psake -buildFile .\Build\default.ps1 `
+Invoke-psake -buildFile .\BuildScripts\default.ps1 `
 			 -taskList Test `
 			 -framework 4.5.2 `
 			 -properties @{ 
