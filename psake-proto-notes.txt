@@ -1,0 +1,6 @@
+psake demo
+
+Pending: create bare git repo at AWS see URL below. Need to talk to Tristan to get access into that box
+
+
+http://ec2-107-20-169-185.compute-1.amazonaws.com:8080/santi-psake-proto.git
