@@ -41,7 +41,7 @@ task Init -description "Initiates the build by removing previous artifacts and c
 task RestorePackages -description "Restores NuGet packages" `
                      -requiredVariables solutionFile, nugetExe {
     Write-Host "Restoring packages for solution [$solutionFile] using NuGet at [$nugetExe]"
-    Exec { & $nugetExe restore $solutionFile -PackagesDirectory .\packages -NonInteractive }
+    Exec { & $nugetExe restore $solutionFile -PackagesDirectory ..\packages -NonInteractive }
 }
 
 task Compile -depends Init, RestorePackages `
