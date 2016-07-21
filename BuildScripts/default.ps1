@@ -10,9 +10,11 @@ properties {
     $temporaryOutputDirectory = "$outputDirectory\temp"
 
     $publishedNUnitTestsDirectory = "$temporaryOutputDirectory\_PublishedNUnitTests"
+    $publishedMSTestTestsDirectory = "$temporaryOutputDirectory\_PublishedMSTests"
 
     $testResultsDirectory = "$outputDirectory\TestResults"
     $NUnitTestResultsDirectory = "$testResultsDirectory\NUnit"
+    $MSTestTestResultsDirectory = "$testResultsDirectory\MSTest"
 
     $buildConfiguration = "Release"
     $buildPlatform = "Any CPU"
@@ -20,6 +22,8 @@ properties {
     $packagesPath = "$solutionDirectory\packages"
 
     $nunitExe = (Find-PackagePath $packagesPath "NUnit.ConsoleRunner") + "\tools\nunit3-console.exe"
+
+    $vsTestExe = (Get-ChildItem("C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe")).FullName | Sort-Object $_ | select -Last 1
 }
 
 FormatTaskName "`r`n`r`n------------------ Executing {0} Task ------------------"
@@ -39,7 +43,9 @@ task Init `
 
     # Checking that all tools are available
     Write-Host "Checking that all required tools are available"
+    
     Assert(Test-Path $nunitExe) "NUnit Console could not be found at [$nunitExe]"
+    Assert(Test-Path $vsTestExe) "VSTest Console could not be found at [$vsTestExe]"
 
     # Removing previous build results
     if (Test-Path $outputDirectory)
@@ -86,38 +92,33 @@ task TestNUnit `
     -description "Run NUnit tests" `
     -precondition { return Test-Path $publishedNUnitTestsDirectory } `
 {
-    $projects = Get-ChildItem $publishedNUnitTestsDirectory
+    $testAssemblies = Prepare-Tests -testRunnerName "NUnit" `
+                                    -publishedTestsDirectory $publishedNUnitTestsDirectory `
+                                    -testResultsDirectory $NUnitTestResultsDirectory
 
-    if ($projects.Count -eq 1)
-    {
-        Write-Host "1 NUnit project has been found:"
-    }
-    else
-    {
-        Write-Host $projects.Count " NUnit projects have been found:"
-    }
-
-    Write-Host ($projects | Select $_.Name)
-
-    # creating the test results directory if needed
-    if (!(Test-Path $NUnitTestResultsDirectory))
-    {
-        Write-Host "Creating test results directory located at [$NUnitTestResultsDirectory]"
-        mkdir $NUnitTestResultsDirectory | Out-Null
-    }
-
-    # getting list of test DLLs
-    $testAssemblies = $projects | ForEach-Object { $_.FullName + "\" + $_.Name + ".dll" }
-
-    $testAssembliesParameter = [string]::Join(" ", $testAssemblies)
-
-    Exec { & $nunitExe $testAssembliesParameter --work $NUnitTestResultsDirectory --noheader }
+    Exec { & $nunitExe $testAssemblies --work $NUnitTestResultsDirectory --noheader }
 }
 
 task TestMSTest `
     -depends Compile `
     -description "Run MSTest tests" `
+    -precondition { return Test-Path $publishedMSTestTestsDirectory } `
 {
+    $testAssemblies = Prepare-Tests -testRunnerName "MSTest" `
+                                    -publishedTestsDirectory $publishedMSTestTestsDirectory `
+                                    -testResultsDirectory $MSTestTestResultsDirectory
+
+    # changing working directory and back to current directory because vstest console doesn't have any option to change the output directory so we need to change the working directory
+    Push-Location $MSTestTestResultsDirectory
+
+    Exec { & $vsTestExe $testAssemblies /Logger:trx }
+
+    Pop-Location
+
+    # moving the .trx file back to the results directory because vstest create its own results directory (Test Results)
+    Move-Item -Path $MSTestTestResultsDirectory\TestResults\*.trx -Destination $MSTestTestResultsDirectory\MSTest.trx
+
+    Remove-Item $MSTestTestResultsDirectory\TestResults
 }
 
 task Test `
