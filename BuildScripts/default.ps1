@@ -176,24 +176,24 @@ task Test `
             $coverageSummary = $coverage.CoverageSession.Summary
         
             # providing service messages to TeamCity for class coverage
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsCCovered' value='$($coverageSummary.visitedClasses)']"
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsCTotal' value='$($coverageSummary.numClasses)']"
-            Write-Host("##teamcity[buildStatisticsValue key='CodeCoverageC' value='{0:N2}']" -f (($coverageSummary.visitedClasses / $coverageSummary.numClasses) * 100))
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageAbsCCovered' value='$($coverageSummary.visitedClasses)']"
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageAbsCTotal' value='$($coverageSummary.numClasses)']"
+            Write-Host("##teamcity[buildStatisticValue key='CodeCoverageC' value='{0:N2}']" -f (($coverageSummary.visitedClasses / $coverageSummary.numClasses) * 100))
 
             # providing service messages to TeamCity for method coverage
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsMCovered' value='$($coverageSummary.visitedMethods)']"
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsMTotal' value='$($coverageSummary.numMethods)']"
-            Write-Host("##teamcity[buildStatisticsValue key='CodeCoverageM' value='{0:N2}']" -f (($coverageSummary.visitedMethods / $coverageSummary.numMethods) * 100))
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageAbsMCovered' value='$($coverageSummary.visitedMethods)']"
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageAbsMTotal' value='$($coverageSummary.numMethods)']"
+            Write-Host("##teamcity[buildStatisticValue key='CodeCoverageM' value='{0:N2}']" -f (($coverageSummary.visitedMethods / $coverageSummary.numMethods) * 100))
 
             # providing service messages to TeamCity for branch coverage
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsBCovered' value='$($coverageSummary.visitedBranchPoints)']"
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsBTotal' value='$($coverageSummary.numBranchPoints)']"
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageB' value='$($coverageSummary.branchCoverage)']"
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageAbsBCovered' value='$($coverageSummary.visitedBranchPoints)']"
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageAbsBTotal' value='$($coverageSummary.numBranchPoints)']"
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageB' value='$($coverageSummary.branchCoverage)']"
 
             # providing service messages to TeamCity for statement coverage using OpenCover sequence coverage
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsSCovered' value='$($coverageSummary.visitedSequencePoints)']"
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsSTotal' value='$($coverageSummary.numSequencePoints)']"
-            Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageS' value='$($coverageSummary.sequenceCoverage)']"
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageAbsSCovered' value='$($coverageSummary.visitedSequencePoints)']"
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageAbsSTotal' value='$($coverageSummary.numSequencePoints)']"
+            Write-Host "##teamcity[buildStatisticValue key='CodeCoverageS' value='$($coverageSummary.sequenceCoverage)']"
 
             Write-Host "`r`n >>> TeamCity service messages END`r`n"
         }
