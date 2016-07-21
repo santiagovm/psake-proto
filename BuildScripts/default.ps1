@@ -10,7 +10,9 @@ properties {
 
     $publishedNUnitTestsDirectory = "$temporaryOutputDirectory\_PublishedNUnitTests"
     $publishedMSTestTestsDirectory = "$temporaryOutputDirectory\_PublishedMSTests"
-
+    $publishedApplicationsDirectory = "$temporaryOutputDirectory\_PublishedApplications"
+    $publishedWebsitesDirectory = "$temporaryOutputDirectory\_PublishedWebsites"
+    
     $testResultsDirectory = "$outputDirectory\TestResults"
     $NUnitTestResultsDirectory = "$testResultsDirectory\NUnit"
     $MSTestTestResultsDirectory = "$testResultsDirectory\MSTest"
@@ -21,6 +23,9 @@ properties {
     $testCoverageExcludeByAttribute = "System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute"
     $testCoverageExcludeByFile = "*\*Designer.cs;*\*.g.cs;*\*.g.i.cs"
 
+    $packagesOutputDirectory = "$outputDirectory\Packages"
+    $applicationsOutputDirectory = "$packagesOutputDirectory\Applications"
+    
     $buildConfiguration = "Release"
     $buildPlatform = "Any CPU"
 
@@ -33,6 +38,7 @@ properties {
 
     $openCoverExe = (Find-PackagePath $packagesPath "OpenCover") + "\tools\OpenCover.Console.exe"
     $reportGeneratorExe = (Find-PackagePath $packagesPath "ReportGenerator") + "\tools\ReportGenerator.exe"
+    $7ZipExe = (Find-PackagePath $packagesPath "7-Zip.CommandLine") + "\tools\7za.exe"
 }
 
 FormatTaskName "`r`n`r`n------------------ Executing {0} Task ------------------"
@@ -59,6 +65,7 @@ task Init `
         # SANTI: PUT THIS BACK Assert(Test-Path $vsTestExe) "VSTest Console could not be found at [$vsTestExe]"
         Assert(Test-Path $openCoverExe) "OpenCover Console could not be found at [$openCoverExe]"
         Assert(Test-Path $reportGeneratorExe) "ReportGenerator Console could not be found at [$reportGeneratorExe]"
+        Assert(Test-Path $7ZipExe) "7-Zip Command Line could not be found at [$7ZipExe]"
     }
     
     # Removing previous build results
@@ -94,12 +101,6 @@ task Compile `
     {
         msbuild $solutionFile /m "/p:Configuration=$buildConfiguration;Platform=$buildPlatform;OutDir=$temporaryOutputDirectory"
     }
-}
-
-task Clean `
-    -description "Remove temporary files" `
-{
-    Write-Host $cleanMessage
 }
 
 task TestNUnit `
@@ -202,4 +203,34 @@ task Test `
     {
         Write-Host "No coverage file found at [$testCoverageReportPath]"
     }
+}
+
+task Package `
+    -depends Compile, Test `
+    -description "Package applications" `
+    -requiredVariables publishedWebsitesDirectory, publishedApplicationsDirectory, applicationsOutputDirectory `
+{
+    # merging published websites and published applications paths
+    $applications = @(Get-ChildItem $publishedWebsitesDirectory) + @(Get-ChildItem $publishedApplicationsDirectory)
+
+    if ($applications.Length -gt 0 -and !(Test-Path $applicationsOutputDirectory))
+    {
+        New-Item $applicationsOutputDirectory -ItemType Directory | Out-Null
+    }
+
+    foreach($app in $applications)
+    {
+        Write-Host "Packaging [$app.Name] as a zip file"
+
+        $archivePath = "$($applicationsOutputDirectory)\$($app.Name).zip"
+        $inputDirectory = "$($app.FullName)\*"
+
+        Exec { & $7ZipExe a -r -mx3 $archivePath $inputDirectory }
+    }
+}
+
+task Clean `
+    -description "Remove temporary files" `
+{
+    Write-Host $cleanMessage
 }

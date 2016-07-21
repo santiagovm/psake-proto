@@ -25,7 +25,7 @@ Import-Module $psakeModule
 Write-Host "Running the build script"
 
 Invoke-psake -buildFile .\BuildScripts\default.ps1 `
-			 -taskList Test `
+			 -taskList Package `
 			 -framework 4.5.2 `
 			 -properties @{ 
 			     "buildConfiguration" = "Release" 
