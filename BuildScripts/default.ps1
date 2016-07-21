@@ -2,7 +2,6 @@
 
 properties {
     $cleanMessage = 'Executed Clean!'
-    $testMessage = 'Executed Test!'
 
     $solutionDirectory = (Get-Item $solutionFile).DirectoryName
     
@@ -16,6 +15,12 @@ properties {
     $NUnitTestResultsDirectory = "$testResultsDirectory\NUnit"
     $MSTestTestResultsDirectory = "$testResultsDirectory\MSTest"
 
+    $testCoverageDirectory = "$outputDirectory\TestCoverage"
+    $testCoverageReportPath = "$testCoverageDirectory\OpenCover.xml"
+    $testCoverageFilter = "+[*]* -[*.NUnitTests]* -[*.Tests]*"
+    $testCoverageExcludeByAttribute = "System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute"
+    $testCoverageExcludeByFile = "*\*Designer.cs;*\*.g.cs;*\*.g.i.cs"
+
     $buildConfiguration = "Release"
     $buildPlatform = "Any CPU"
 
@@ -25,6 +30,9 @@ properties {
 
     # SANTI PUT THIS BACK $vsTestExe = (Get-ChildItem("C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe")).FullName | Sort-Object $_ | select -Last 1
     $vsTestExe = "foo.exe"
+
+    $openCoverExe = (Find-PackagePath $packagesPath "OpenCover") + "\tools\OpenCover.Console.exe"
+    $reportGeneratorExe = (Find-PackagePath $packagesPath "ReportGenerator") + "\tools\ReportGenerator.exe"
 }
 
 FormatTaskName "`r`n`r`n------------------ Executing {0} Task ------------------"
@@ -44,10 +52,15 @@ task Init `
 
     # Checking that all tools are available
     Write-Host "Checking that all required tools are available"
-    
-    Assert(Test-Path $nunitExe) "NUnit Console could not be found at [$nunitExe]"
-    # SANTI: PUT THIS BACK Assert(Test-Path $vsTestExe) "VSTest Console could not be found at [$vsTestExe]"
 
+    Exec `
+    {
+        Assert(Test-Path $nunitExe) "NUnit Console could not be found at [$nunitExe]"
+        # SANTI: PUT THIS BACK Assert(Test-Path $vsTestExe) "VSTest Console could not be found at [$vsTestExe]"
+        Assert(Test-Path $openCoverExe) "OpenCover Console could not be found at [$openCoverExe]"
+        Assert(Test-Path $reportGeneratorExe) "ReportGenerator Console could not be found at [$reportGeneratorExe]"
+    }
+    
     # Removing previous build results
     if (Test-Path $outputDirectory)
     {
@@ -77,7 +90,8 @@ task Compile `
 {
     Write-Host "Building solution [$solutionFile]"
 
-    Exec {
+    Exec `
+    {
         msbuild $solutionFile /m "/p:Configuration=$buildConfiguration;Platform=$buildPlatform;OutDir=$temporaryOutputDirectory"
     }
 }
@@ -95,9 +109,19 @@ task TestNUnit `
 {
     $testAssemblies = Prepare-Tests -testRunnerName "NUnit" `
                                     -publishedTestsDirectory $publishedNUnitTestsDirectory `
-                                    -testResultsDirectory $NUnitTestResultsDirectory
+                                    -testResultsDirectory $NUnitTestResultsDirectory `
+                                    -testCoverageDirectory $testCoverageDirectory
 
-    Exec { & $nunitExe $testAssemblies --work $NUnitTestResultsDirectory --noheader }
+    $targetArgs = "$testAssemblies --work `"`"$NUnitTestResultsDirectory`"`" --noheader"
+
+    # running OpenCover, which in turn will run NUnit
+    Run-Tests -openCoverExe $openCoverExe `
+              -targetExe $nunitExe `
+              -targetArgs $targetArgs `
+              -coveragePath $testCoverageReportPath `
+              -filter $testCoverageFilter `
+              -excludeByAttribute $testCoverageExcludeByAttribute `
+              -excludeByFile $testCoverageExcludeByFile
 }
 
 task TestMSTest `
@@ -107,12 +131,22 @@ task TestMSTest `
 {
     $testAssemblies = Prepare-Tests -testRunnerName "MSTest" `
                                     -publishedTestsDirectory $publishedMSTestTestsDirectory `
-                                    -testResultsDirectory $MSTestTestResultsDirectory
+                                    -testResultsDirectory $MSTestTestResultsDirectory `
+                                    -testCoverageDirectory $testCoverageDirectory
 
     # changing working directory and back to current directory because vstest console doesn't have any option to change the output directory so we need to change the working directory
     Push-Location $MSTestTestResultsDirectory
 
-    Exec { & $vsTestExe $testAssemblies /Logger:trx }
+    $targetArgs = "$testAssemblies /Logger:trx"
+
+    # running OpenCover, which in turn will run NUnit
+    Run-Tests -openCoverExe $openCoverExe `
+              -targetExe $vsTestExe `
+              -targetArgs $targetArgs `
+              -coveragePath $testCoverageReportPath `
+              -filter $testCoverageFilter `
+              -excludeByAttribute: $testCoverageExcludeByAttribute `
+              -excludeByFile: $testCoverageExcludeByFile
 
     Pop-Location
 
@@ -122,9 +156,19 @@ task TestMSTest `
     Remove-Item $MSTestTestResultsDirectory\TestResults
 }
 
+# SANTI: ADD MSTEST WHEN AVAILABLE IN TEAM-CITY
 task Test `
-    -depends Compile, TestNUnit, TestMSTest `
+    -depends Compile, TestNUnit `
     -description "Run unit tests" `
 {
-    Write-Host $testMessage
+    if (Test-Path $testCoverageReportPath)
+    {
+        # generating HTML test coverage report
+        Write-Host "`r`nGenerating HTML test coverage report"
+        Exec { & $reportGeneratorExe $testCoverageReportPath $testCoverageDirectory }
+    }
+    else
+    {
+        Write-Host "No coverage file found at [$testCoverageReportPath]"
+    }
 }
