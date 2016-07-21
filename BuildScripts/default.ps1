@@ -23,7 +23,8 @@ properties {
 
     $nunitExe = (Find-PackagePath $packagesPath "NUnit.ConsoleRunner") + "\tools\nunit3-console.exe"
 
-    $vsTestExe = (Get-ChildItem("C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe")).FullName | Sort-Object $_ | select -Last 1
+    # SANTI PUT THIS BACK $vsTestExe = (Get-ChildItem("C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe")).FullName | Sort-Object $_ | select -Last 1
+    $vsTestExe = "foo.exe"
 }
 
 FormatTaskName "`r`n`r`n------------------ Executing {0} Task ------------------"
