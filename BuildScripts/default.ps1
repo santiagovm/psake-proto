@@ -45,7 +45,7 @@ task Init `
     Write-Host "Checking that all required tools are available"
     
     Assert(Test-Path $nunitExe) "NUnit Console could not be found at [$nunitExe]"
-    Assert(Test-Path $vsTestExe) "VSTest Console could not be found at [$vsTestExe]"
+    # SANTI: PUT THIS BACK Assert(Test-Path $vsTestExe) "VSTest Console could not be found at [$vsTestExe]"
 
     # Removing previous build results
     if (Test-Path $outputDirectory)
