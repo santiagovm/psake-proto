@@ -19,5 +19,11 @@ namespace WebApplication.NUnitTests.Controllers
             // Assert
             Assert.IsNotNull(result);
         }
+
+        //[Test]
+        //public void test_foo()
+        //{
+        //    Assert.Fail("this test fails on purpose to see how build reports this");
+        //}
     }
 }
