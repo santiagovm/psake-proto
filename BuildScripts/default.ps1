@@ -166,6 +166,34 @@ task Test `
         # generating HTML test coverage report
         Write-Host "`r`nGenerating HTML test coverage report"
         Exec { & $reportGeneratorExe $testCoverageReportPath $testCoverageDirectory }
+
+        # loading the coverage report as xml
+        Write-Host "`r`n >>> TeamCity service messages BEGIN`r`n"
+
+        $coverage = [xml](Get-Content -Path $testCoverageReportPath)
+        $coverageSummary = $coverage.CoverageSession.Summary
+        
+        # providing service messages to TeamCity for class coverage
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsCCovered' value='$($coverageSummary.visitedClasses)']"
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsCTotal' value='$($coverageSummary.numClasses)']"
+        Write-Host("##teamcity[buildStatisticsValue key='CodeCoverageC' value='{0:N2}']" -f (($coverageSummary.visitedClasses / $coverageSummary.numClasses) * 100))
+
+        # providing service messages to TeamCity for method coverage
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsMCovered' value='$($coverageSummary.visitedMethods)']"
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsMTotal' value='$($coverageSummary.numMethods)']"
+        Write-Host("##teamcity[buildStatisticsValue key='CodeCoverageM' value='{0:N2}']" -f (($coverageSummary.visitedMethods / $coverageSummary.numMethods) * 100))
+
+        # providing service messages to TeamCity for branch coverage
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsBCovered' value='$($coverageSummary.visitedBranchPoints)']"
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsBTotal' value='$($coverageSummary.numBranchPoints)']"
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageB' value='$($coverageSummary.branchCoverage)']"
+
+        # providing service messages to TeamCity for statement coverage using OpenCover sequence coverage
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsSCovered' value='$($coverageSummary.visitedSequencePoints)']"
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageAbsSTotal' value='$($coverageSummary.numSequencePoints)']"
+        Write-Host "##teamcity[buildStatisticsValue key='CodeCoverageS' value='$($coverageSummary.sequenceCoverage)']"
+
+        Write-Host "`r`n >>> TeamCity service messages END`r`n"
     }
     else
     {
