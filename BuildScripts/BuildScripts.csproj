@@ -43,7 +43,12 @@
     <None Include="default.ps1" />
     <None Include="helpers.ps1" />
     <None Include="MSBuild\MSTestBuild.targets" />
-    <None Include="MSBuild\ApplicationBuild.targets" />
+    <None Include="MSBuild\ApplicationBuild.targets">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="MSBuild\NuGetBuild.targets">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="MSBuild\NUnitBuild.targets" />
     <None Include="packages.config" />
   </ItemGroup>
