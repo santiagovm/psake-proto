@@ -1,10 +1,9 @@
-﻿[CmdletBinding()]
-Param(
-	[Parameter(Position=0,Mandatory=1)][String]$nugetExe,
-	[Parameter(Position=1,Mandatory=0)][Int32]$buildNumber=0,
-	[Parameter(Position=2,Mandatory=0)][String]$branchName="localBuild",
-	[Parameter(Position=3,Mandatory=0)][String]$gitCommitHash="unknownHash",
-	[Parameter(Position=4,Mandatory=0)][Switch]$isMainBranch=$False
+﻿param(
+	[String]$nugetExe,
+	[Int32]$buildNumber=0,
+	[String]$branchName="localBuild",
+	[String]$gitCommitHash="unknownHash",
+	[Switch]$isMainBranch=$False
 )
 
 cls
