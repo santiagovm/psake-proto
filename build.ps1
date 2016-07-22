@@ -1,7 +1,10 @@
 ﻿[CmdletBinding()]
 Param(
-  [Parameter(Mandatory=$True,Position=1)]
-   [string]$nugetExe
+	[Parameter(Position=0,Mandatory=1)][String]$nugetExe,
+	[Parameter(Position=1,Mandatory=0)][Int32]$buildNumber=0,
+	[Parameter(Position=2,Mandatory=0)][String]$branchName="localBuild",
+	[Parameter(Position=3,Mandatory=0)][String]$gitCommitHash="unknownHash",
+	[Parameter(Position=4,Mandatory=0)][Switch]$isMainBranch=$False
 )
 
 cls
@@ -32,7 +35,11 @@ Invoke-psake -buildFile .\BuildScripts\default.ps1 `
 			     "buildPlatform" = "Any CPU" } `
 			 -parameters @{ 
 				 "solutionFile" = "..\psake.sln" 
-				 "nugetExe" = $nugetExe }
+				 "nugetExe" = $nugetExe
+				 "buildNumber" = $buildNumber
+				 "branchName" = $branchName
+				 "gitCommitHash" = $gitCommitHash
+				 "isMainBranch" = $isMainBranch }
 
 # propagating the exit code so that builds actually fail when there is a problem
 Write-Host "`r`nBuild exit code: " $LASTEXITCODE
