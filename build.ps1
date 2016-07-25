@@ -17,11 +17,11 @@ Write-Host "NuGetSource: [$nugetSource]"
 
 if ($nugetSource -eq "")
 {
-	& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages"
+	& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages" -NonInteractive
 }
 else
 {
-	& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages" -Source $nugetSource
+	& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages" -NonInteractive -Source $nugetSource
 }
 
 # '[p]sake' is the same as 'psake' but $Error is not polluted
@@ -54,7 +54,8 @@ Invoke-psake -buildFile $psakeScript `
 				 "buildNumber" = $buildNumber
 				 "branchName" = $branchName
 				 "gitCommitHash" = $gitCommitHash
-				 "isMainBranch" = $isMainBranch }
+				 "isMainBranch" = $isMainBranch 
+				 "nugetSource" = $nugetSource }
 
 # propagating the exit code so that builds actually fail when there is a problem
 Write-Host "`r`nBuild exit code: " $LASTEXITCODE
