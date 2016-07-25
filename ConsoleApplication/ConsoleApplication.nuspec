@@ -2,13 +2,13 @@
 <package>
     <metadata>
         <id>ConsoleApplication</id>
-        <version>1.0.[buildNumber]</version>
+        <version>1.0.0</version>
         <title>Console Application</title>
         <authors>Foo Author</authors>
         <owners>Foo Owner</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Foo description</description>
-        <releaseNotes>[release notes]</releaseNotes>
+        <releaseNotes>Some fake release notes</releaseNotes>
         <copyright>Foo Copyright 2020</copyright>
         <tags></tags>
     </metadata>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>WebApplication</id>
+        <version>1.0.0-alpha</version>
+        <title>WebApplication</title>
+        <authors>Santiago Vasquez</authors>
+        <owners>eGifter</owners>
+        <iconUrl>https://www.egifter.com/Images/themes/eGifter/2015/egifter_logo.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>WebApplication</description>
+        <releaseNotes>Some fake release notes</releaseNotes>
+        <copyright>eGifter Copyright 2016</copyright>
+        <tags></tags>
+    </metadata>
+</package>

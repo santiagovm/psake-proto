@@ -17,7 +17,11 @@ Write-Host "Importing psake module"
 Remove-Module [p]sake
 
 # find psake's path
-$psakeModule = (Get-ChildItem(".\packages\psake.*\tools\psake.psm1")).FullName | `
+$psakeModule = (Get-ChildItem(".\packages\psake*\tools\psake.psm1")).FullName | `
+					Sort-Object $_ | `
+					Select -Last 1
+
+$psakeScript = (Get-ChildItem(".\packages\EG.BuildScripts*\tools\default.ps1")).FullName | `
 					Sort-Object $_ | `
 					Select -Last 1
 
@@ -26,14 +30,14 @@ Import-Module $psakeModule
 # running the build script
 Write-Host "Running the build script"
 
-Invoke-psake -buildFile .\BuildScripts\default.ps1 `
+Invoke-psake -buildFile $psakeScript `
 			 -taskList Clean `
 			 -framework 4.5.2 `
 			 -properties @{ 
 			     "buildConfiguration" = "Release" 
 			     "buildPlatform" = "Any CPU" } `
 			 -parameters @{ 
-				 "solutionFile" = "..\psake.sln" 
+				 "solutionFile" = Resolve-Path(".\psake.sln") 
 				 "nugetExe" = $nugetExe
 				 "buildNumber" = $buildNumber
 				 "branchName" = $branchName

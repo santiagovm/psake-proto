@@ -8,7 +8,7 @@
         <owners>Foo Owner</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Foo description</description>
-        <releaseNotes>[release notes]</releaseNotes>
+        <releaseNotes>Some fake release notes</releaseNotes>
         <copyright>Foo Copyright 2020</copyright>
         <tags></tags>
     </metadata>
