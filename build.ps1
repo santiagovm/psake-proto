@@ -3,14 +3,26 @@
 	[Int32]$buildNumber=0,
 	[String]$branchName="localBuild",
 	[String]$gitCommitHash="unknownHash",
-	[Switch]$isMainBranch=$False
+	[Switch]$isMainBranch=$False,
+	[String]$nugetSource=""
 )
 
 cls
 
 # Restore NuGet packages for build to run
 Write-Host "Restoring packages needed for Build script to run"
-# SANTI: IS THIS REALLY NEEDED? & $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages"
+
+Write-Host "NuGetExe: [$nugetExe]"
+Write-Host "NuGetSource: [$nugetSource]"
+
+if ($nugetSource -eq "")
+{
+	& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages"
+}
+else
+{
+	& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages" -Source $nugetSource
+}
 
 # '[p]sake' is the same as 'psake' but $Error is not polluted
 Write-Host "Importing psake module"
