@@ -47,15 +47,15 @@ Invoke-psake -buildFile $psakeScript `
 			 -framework 4.5.2 `
 			 -properties @{ 
 			     "buildConfiguration" = "Release" 
-			     "buildPlatform" = "Any CPU" } `
+			     "buildPlatform" = "Any CPU" 
+			     "nugetSource" = $nugetSource } `
 			 -parameters @{ 
 				 "solutionFile" = Resolve-Path(".\psake.sln") 
 				 "nugetExe" = $nugetExe
 				 "buildNumber" = $buildNumber
 				 "branchName" = $branchName
 				 "gitCommitHash" = $gitCommitHash
-				 "isMainBranch" = $isMainBranch 
-				 "nugetSource" = $nugetSource }
+				 "isMainBranch" = $isMainBranch }
 
 # propagating the exit code so that builds actually fail when there is a problem
 Write-Host "`r`nBuild exit code: " $LASTEXITCODE
