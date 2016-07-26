@@ -316,9 +316,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('..\packages\EG.NuGetPackager.1.0.1\build\EG.NuGetPackager.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EG.NuGetPackager.1.0.1\build\EG.NuGetPackager.targets'))" />
+    <Error Condition="!Exists('..\packages\EG.NuGetPackager.1.0.2\build\EG.NuGetPackager.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EG.NuGetPackager.1.0.2\build\EG.NuGetPackager.targets'))" />
   </Target>
-  <Import Project="..\packages\EG.NuGetPackager.1.0.1\build\EG.NuGetPackager.targets" Condition="Exists('..\packages\EG.NuGetPackager.1.0.1\build\EG.NuGetPackager.targets')" />
+  <Import Project="..\packages\EG.NuGetPackager.1.0.2\build\EG.NuGetPackager.targets" Condition="Exists('..\packages\EG.NuGetPackager.1.0.2\build\EG.NuGetPackager.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
