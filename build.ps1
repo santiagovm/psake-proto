@@ -17,11 +17,11 @@ Write-Host "NuGetSource: [$nugetSource]"
 
 if ($nugetSource -eq "")
 {
-	& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages" -NonInteractive
+	& $nugetExe restore ".\ClassLibrary\packages.config" -PackagesDirectory ".\packages" -NonInteractive
 }
 else
 {
-	& $nugetExe restore ".\BuildScripts\packages.config" -PackagesDirectory ".\packages" -NonInteractive -Source $nugetSource
+	& $nugetExe restore ".\ClassLibrary\packages.config" -PackagesDirectory ".\packages" -NonInteractive -Source $nugetSource
 }
 
 # '[p]sake' is the same as 'psake' but $Error is not polluted
